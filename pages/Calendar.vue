@@ -91,7 +91,6 @@ async function addToCalendar() {
 			<ion-input v-model="eventName" />
 		</ion-item>
 		<h2>Items to add to calendar:</h2>
-		<!-- list each item of list on new line -->
 		<template v-for="item in eventList">
 			<ion-item>
 				<ion-label>

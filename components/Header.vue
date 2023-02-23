@@ -34,9 +34,6 @@ const router = useIonRouter()
 				<ion-menu-button :autoHide="false"></ion-menu-button>
 			</ion-buttons>
 			<ion-buttons slot="end">
-				<ion-button @click="router.push('/profile')">
-					<ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
-				</ion-button>
 				<!-- TODO: if enough room -->
 				<!-- TODO: pages type -->
 				<ion-button
@@ -45,6 +42,9 @@ const router = useIonRouter()
 					@click="router.push(page.path)"
 					>{{ page.name }}</ion-button
 				>
+				<ion-button @click="router.push('/profile')">
+					<ion-icon slot="icon-only" :icon="personCircle"></ion-icon>
+				</ion-button>
 			</ion-buttons>
 		</ion-toolbar>
 		<!-- <ion-toolbar v-if="subtitle">

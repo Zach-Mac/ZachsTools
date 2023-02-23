@@ -9,8 +9,8 @@ const props = defineProps<{
 	program: Program
 }>()
 
-const program = ref(props.program)
-const { history, undo, redo, canUndo, canRedo } = useRefHistory(program, {
+const programData = ref(props.program.data)
+const { history, undo, redo, canUndo, canRedo } = useRefHistory(programData, {
 	deep: true
 })
 
@@ -27,7 +27,11 @@ useEventListener(document, 'keydown', e => {
 const saveToast = ref(false)
 const saveErrorToast = ref(null)
 function onSave() {
-	updateProgram(program.value)
+	const newProgram = {
+		name: props.program.name,
+		data: programData.value
+	}
+	updateProgram(newProgram)
 		.then(() => {
 			saveToast.value = true
 		})
@@ -37,15 +41,15 @@ function onSave() {
 		})
 }
 
-let mL = new Array(Object.keys(program.value).length)
-for (let name of Object.keys(program.value)) {
-	mL[program.value[name].index] = name
+let mL = new Array(Object.keys(programData.value).length)
+for (let name of Object.keys(programData.value)) {
+	mL[programData.value[name].index] = name
 }
 
 const musclesList = ref(mL)
 watch(musclesList, () => {
 	for (let i = 0; i < musclesList.value.length; i++) {
-		program.value[musclesList.value[i]].index = i
+		programData.value[musclesList.value[i]].index = i
 	}
 })
 
@@ -54,9 +58,9 @@ const musclesComputed = computed(() => {
 		musclesList.value.map(m => [
 			m,
 			{
-				setsPerWeek: parseInt(program.value[m].setsPerDay)
-					? parseInt(program.value[m].setsPerDay) *
-					  program.value[m].days.length
+				setsPerWeek: parseInt(programData.value[m].setsPerDay)
+					? parseInt(programData.value[m].setsPerDay) *
+					  programData.value[m].days.length
 					: 0
 			}
 		])
@@ -66,9 +70,9 @@ const musclesComputed = computed(() => {
 
 const totalSetsPerDay = day => {
 	let total = 0
-	for (let m of Object.keys(program.value)) {
-		if (program.value[m].days.includes(day)) {
-			total += parseInt(program.value[m].setsPerDay)
+	for (let m of Object.keys(programData.value)) {
+		if (programData.value[m].days.includes(day)) {
+			total += parseInt(programData.value[m].setsPerDay)
 		}
 	}
 	return total
@@ -79,7 +83,7 @@ async function addMuscle() {
 	if (newMuscle.value) {
 		if (!musclesList.value.includes(newMuscle.value)) {
 			const newIndex = musclesList.value.length
-			program.value[newMuscle.value] = {
+			programData.value[newMuscle.value] = {
 				days: [],
 				setsPerDay: '0',
 				index: newIndex
@@ -99,23 +103,23 @@ async function addMuscle() {
 	}
 }
 function deleteMuscle(m) {
-	delete program.value[m]
+	delete programData.value[m]
 	musclesList.value = musclesList.value.filter(muscle => muscle !== m)
 }
 
 function toggleDay(m, day) {
 	let index
-	if ((index = program.value[m].days.indexOf(day)) >= 0) {
-		program.value[m].days.splice(index, 1)
+	if ((index = programData.value[m].days.indexOf(day)) >= 0) {
+		programData.value[m].days.splice(index, 1)
 	} else {
 		// console.log('muscles', muscles)
-		program.value[m].days.push(day)
+		programData.value[m].days.push(day)
 		// console.log('muscles', muscles)
 	}
 }
 
 function getDay(m, day) {
-	if (program.value[m].days.includes(day)) {
+	if (programData.value[m].days.includes(day)) {
 		return m
 	}
 	return '-'
@@ -141,27 +145,19 @@ const lastWinWidthTableChange = ref(0)
 watchThrottled(
 	[winWidth, tableWidth],
 	() => {
-		console.log('asdfasdf', shrinkage.value)
 		if (winWidth.value < tableWidth.value + 5) {
 			// shorten table
 			// if not max level, increase level
-			console.log('shorten table', winWidth.value, tableWidth.value + 5)
 			if (shrinkage.value < MAX_SHRINKAGE) {
 				shrinkage.value++
 				update()
 			}
 			lastWinWidthTableChange.value = winWidth.value
-			console.log('222222222', shrinkage.value)
 		} else {
 			// lengthen table
 			// if not winWidth == lastWinWidthTableChange, decrease level
 			if (winWidth.value != lastWinWidthTableChange.value) {
 				if (shrinkage.value > 0) {
-					console.log(
-						'lengthen table',
-						winWidth.value,
-						tableWidth.value + 5
-					)
 					shrinkage.value--
 					update()
 				}
@@ -237,7 +233,7 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 									class="ion-no-padding"
 									type="text"
 									size="1"
-									v-model="program[element].setsPerDay"
+									v-model="programData[element].setsPerDay"
 								/>
 							</ion-item>
 						</td>
