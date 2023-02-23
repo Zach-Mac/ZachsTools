@@ -97,11 +97,32 @@ export default function () {
 		return { error }
 	}
 
+	async function deleteProgram(programName: string) {
+		const { data, error } = await supabase
+			.from('muscle_group_schedules')
+			.delete()
+			.match({
+				name: programName
+			})
+
+		if (error) {
+			throw error
+			// saveErrorToast.value = true
+			console.log('supabase post error', error)
+		} else {
+			// saveToast.value = true
+			console.log('supabase post data', data)
+		}
+
+		return { error }
+	}
+
 	return {
 		loadPrograms,
 		programs,
 		loaded,
 		selectedProgram,
-		updateProgram
+		updateProgram,
+		deleteProgram
 	}
 }

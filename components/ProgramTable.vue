@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import draggable from 'vuedraggable'
-import { toastController } from '@ionic/vue'
+import { toastController, alertController } from '@ionic/vue'
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
@@ -14,7 +14,7 @@ const { history, undo, redo, canUndo, canRedo } = useRefHistory(programData, {
 	deep: true
 })
 
-const { updateProgram } = usePrograms()
+const { updateProgram, deleteProgram, loadPrograms } = usePrograms()
 
 useEventListener(document, 'keydown', e => {
 	if (e.ctrlKey && e.key === 'z') {
@@ -26,6 +26,7 @@ useEventListener(document, 'keydown', e => {
 
 const saveToast = ref(false)
 const saveErrorToast = ref(null)
+const deleteToast = ref(false)
 function onSave() {
 	const newProgram = {
 		name: props.program.name,
@@ -34,11 +35,39 @@ function onSave() {
 	updateProgram(newProgram)
 		.then(() => {
 			saveToast.value = true
+			loadPrograms()
 		})
 		.catch(e => {
 			saveErrorToast.value = true
 			console.log('supabase post error', e)
 		})
+}
+
+async function onDelete() {
+	const alert = await alertController.create({
+		header: 'Are you absolutely sure?',
+		buttons: [
+			{
+				text: 'Cancel',
+				role: 'cancel',
+				handler: () => {}
+			},
+			{
+				text: 'OK',
+				role: 'confirm',
+				handler: () => {
+					deleteProgram(props.program.name).then(() => {
+						deleteToast.value = true
+						loadPrograms()
+					})
+				}
+			}
+		],
+		message:
+			'This will permanently delete the program and all data associated with it.'
+	})
+
+	await alert.present()
 }
 
 let mL = new Array(Object.keys(programData.value).length)
@@ -270,6 +299,7 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 		</table>
 	</div>
 	<ion-button @click="onSave()"> Save </ion-button>
+	<ion-button @click="onDelete()" color="danger"> Delete </ion-button>
 	<ion-toast
 		:isOpen="saveToast"
 		@didDismiss="() => (saveToast = false)"
@@ -281,6 +311,13 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 		:isOpen="saveErrorToast"
 		@didDismiss="() => (saveErrorToast = false)"
 		message="Error saving. Please try again"
+		duration="1000"
+		position="middle"
+	/>
+	<ion-toast
+		:isOpen="deleteToast"
+		@didDismiss="() => (deleteToast = false)"
+		message="Program deleted"
 		duration="1000"
 		position="middle"
 	/>
