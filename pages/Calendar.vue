@@ -9,6 +9,8 @@ const { getCalendarList, calendarList, quickAdd, selectedCalendarId } =
 
 const rawText = useSessionStorage('rawText', '')
 
+const geegee = ref(false)
+
 // const eventList = ref([])
 
 // function inputRawText() {
@@ -33,20 +35,25 @@ const eventName = ref('')
 
 const eventList = computed(() => {
 	let lines = rawText.value.split('\n')
+	if (geegee.value) {
+		lines = lines.map(line => {
+			// remove dashes
+			line = line.replaceAll('-', ' ')
+
+			// remove first word (day of week) and last 2 words (gym number)
+			line = line.split(' ').slice(1, -2).join(' ')
+
+			return line
+		})
+		// return every other item in list
+		lines = lines.filter((item, index) => index % 2 === 0)
+	}
+
 	lines = lines.map(line => {
-		// remove dashes
-		line = line.replaceAll('-', ' ')
-
-		// remove first word (day of week) and last 2 words (gym number)
-		line = line.split(' ').slice(1, -2).join(' ')
-
-		line = line + ' ' + eventName.value
-
-		return line
+		return (line = eventName.value + ' ' + line)
 	})
 
-	// return every other item in list
-	return lines.filter((item, index) => index % 2 === 0)
+	return lines
 })
 
 getCalendarList()
@@ -83,7 +90,10 @@ async function addToCalendar() {
 			<!-- @keyup.ctrl.enter="inputRawText" -->
 		</ion-item>
 		<!-- <ion-button @click="inputRawText">Input</ion-button> -->
-
+		<ion-item>
+			<ion-label>From geegeereg</ion-label>
+			<ion-checkbox v-model="geegee" />
+		</ion-item>
 		<br />
 		<br />
 		<ion-item fill="outline">
