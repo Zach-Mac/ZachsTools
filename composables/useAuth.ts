@@ -8,9 +8,9 @@ import {
 	Provider
 } from 'vue-auth-ui'
 
-const supabase = useSupabaseClient()
-
 export default function () {
+	const supabase = useSupabaseClient()
+
 	const appearance = {
 		theme: ThemeSupa,
 		style: {

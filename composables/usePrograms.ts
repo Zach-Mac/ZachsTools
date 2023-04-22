@@ -23,9 +23,6 @@ const validate = ajv.compile(muscleGroup)
 // const valid = validate()
 // if (!valid) console.log(validate.errors)
 
-const supabase = useSupabaseClient()
-const user = useSupabaseUser()
-
 const supabaseGetError = ref(null)
 const loaded = ref(false)
 
@@ -33,6 +30,14 @@ const selectedProgram: Ref<Program> = ref({} as Program)
 const programs: Ref<Program[]> = ref([])
 
 export default function () {
+	const supabase = useSupabaseClient()
+	const user = useSupabaseUser()
+	const router = useIonRouter()
+
+	// refresh page if user is not logged in
+	// TODO: need a guard for this
+	if (!user.value) window.location = window.location.origin
+
 	async function loadPrograms() {
 		const { data: returnedData, error }: any = await supabase
 			.from('muscle_group_schedules')
