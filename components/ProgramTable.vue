@@ -2,9 +2,6 @@
 import draggable from 'vuedraggable'
 import { toastController, alertController } from '@ionic/vue'
 
-const supabase = useSupabaseClient()
-const user = useSupabaseUser()
-
 const props = defineProps<{
 	program: Program
 }>()
@@ -13,8 +10,6 @@ const programData = ref(props.program.data)
 const { history, undo, redo, canUndo, canRedo } = useRefHistory(programData, {
 	deep: true
 })
-
-const { updateProgram, deleteProgram, loadPrograms } = usePrograms()
 
 useEventListener(document, 'keydown', e => {
 	if (e.ctrlKey && e.key === 'z') {
@@ -257,14 +252,12 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 						<td class="spacer"></td>
 						<td class="handle">{{ element }}</td>
 						<td>
-							<ion-item fill="outline" class="sd">
-								<ion-input
-									class="ion-no-padding"
-									type="text"
-									size="1"
-									v-model="programData[element].setsPerDay"
-								/>
-							</ion-item>
+							<ion-input
+								class="ion-no-padding sdInput"
+								fill="outline"
+								type="text"
+								v-model="programData[element].setsPerDay"
+							/>
 						</td>
 						<td>
 							{{ musclesComputed[element].setsPerWeek }}
@@ -285,15 +278,15 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 				</td>
 				<td class="spacer"></td>
 				<td>
-					<ion-item fill="outline">
-						<ion-label position="floating">Add</ion-label>
-						<ion-input
-							@keydown.enter="addMuscle()"
-							type="text"
-							size="10"
-							v-model="newMuscle"
-						/>
-					</ion-item>
+					<ion-input
+						label="Add"
+						labelPlacement="floating"
+						@keydown.enter="addMuscle()"
+						fill="outline"
+						type="text"
+						:size="10"
+						v-model="newMuscle"
+					/>
 				</td>
 			</tr>
 		</table>
@@ -362,37 +355,14 @@ td {
 	border-top: none;
 	border-bottom: none;
 }
+</style>
 
-.sdInput {
+<style>
+.sdInput * {
+	padding: 0 !important;
 	--padding-start: 0px !important;
 	padding-right: 0px;
 	--inner-padding-end: 0px;
 	text-align: center;
-}
-</style>
-
-<style>
-/* ionic input classes */
-.item-inner {
-	padding: 0 !important;
-}
-.item-native {
-	padding: 0 !important;
-}
-
-:root {
-	--native-padding-left: 0px !important;
-}
-
-:host(.item-fill-outline) .item-native {
-	--native-padding-left: 0px !important;
-	border-radius: 40px;
-}
-
-.item-native {
-	--native-padding-left: 0px !important;
-	padding-inline-start: 0px !important;
-	--padding-start: 0px !important;
-	border-radius: 4px;
 }
 </style>

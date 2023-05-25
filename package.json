@@ -8,21 +8,21 @@
 		"postinstall": "nuxt prepare"
 	},
 	"devDependencies": {
-		"@kevinmarrec/nuxt-pwa": "^0.11.1",
-		"@nuxtjs/ionic": "^0.8.1",
-		"@nuxtjs/supabase": "^0.3.0",
-		"@vueuse/components": "^9.4.0",
-		"@vueuse/core": "^9.4.0",
-		"@vueuse/nuxt": "^9.4.0",
-		"nuxt": "^3.1.0",
-		"typescript-json-schema": "^0.55.0"
+		"@kevinmarrec/nuxt-pwa": "^0.17.0",
+		"@nuxtjs/ionic": "^0.10.0",
+		"@nuxtjs/supabase": "^0.3.5",
+		"@vueuse/components": "^10.1.2",
+		"@vueuse/core": "^10.1.2",
+		"@vueuse/nuxt": "^10.1.2",
+		"nuxt": "^3.5.0",
+		"typescript-json-schema": "^0.56.0"
 	},
 	"dependencies": {
-		"@formkit/auto-animate": "^1.0.0-beta.5",
-		"@ionic/core": "^6.3.0",
-		"@ionic/vue": "^6.3.0",
+		"@formkit/auto-animate": "^1.0.0-beta.6",
+		"@ionic/core": "^7.0.7",
+		"@ionic/vue": "^7.0.7",
 		"ajv": "^8.12.0",
-		"axios": "^1.2.6",
+		"axios": "^1.4.0",
 		"lodash": "^4.17.21",
 		"lodash-es": "^4.17.21",
 		"vue-auth-ui": "^0.1.1",

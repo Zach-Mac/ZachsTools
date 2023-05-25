@@ -70,8 +70,11 @@ async function addToCalendar() {
 		<h2>Calendars</h2>
 		<!-- {{ calendarList }} -->
 		<ion-item>
-			<ion-label>Calendar</ion-label>
-			<ion-select v-model="selectedCalendarId">
+			<ion-select
+				placeholder="Select calendar"
+				interface="popover"
+				v-model="selectedCalendarId"
+			>
 				<ion-select-option
 					v-for="cal in calendarList"
 					:value="cal.id"
@@ -83,23 +86,26 @@ async function addToCalendar() {
 
 		<br />
 		<br />
-
-		<ion-item fill="outline">
-			<ion-label position="floating">Input</ion-label>
-			<ion-textarea v-model="rawText" autoGrow />
-			<!-- @keyup.ctrl.enter="inputRawText" -->
-		</ion-item>
+		<!-- TODO: size -->
+		<ion-textarea
+			label="Input"
+			labelPlacement="floating"
+			fill="outline"
+			v-model="rawText"
+			autoGrow
+		/>
+		<br />
+		<!-- @keyup.ctrl.enter="inputRawText" -->
 		<!-- <ion-button @click="inputRawText">Input</ion-button> -->
-		<ion-item>
-			<ion-label>From geegeereg</ion-label>
-			<ion-checkbox v-model="geegee" />
-		</ion-item>
+		<ion-checkbox v-model="geegee">From geegeereg</ion-checkbox>
 		<br />
 		<br />
-		<ion-item fill="outline">
-			<ion-label position="floating"> Event name </ion-label>
-			<ion-input v-model="eventName" />
-		</ion-item>
+		<ion-input
+			label=" Event Name "
+			labelPlacement="floating"
+			fill="outline"
+			v-model="eventName"
+		/>
 		<h2>Items to add to calendar:</h2>
 		<template v-for="item in eventList">
 			<ion-item>

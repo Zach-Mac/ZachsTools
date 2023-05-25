@@ -2,7 +2,6 @@
 // call load programs
 // no programs then create blank and use default
 
-const { programs, loadPrograms, selectedProgram, loaded } = usePrograms()
 loadPrograms()
 
 // manually change ProgramTable key to force rerender
@@ -13,6 +12,13 @@ watch(selectedProgram, () => {
 	console.log('selectedProgram', selectedProgram.value)
 })
 
+function onSelectProgram(program: Program) {
+	selectedProgram.value = program
+}
+function onNewProgram() {
+	selectedProgram.value = DEFAULT_PROGRAM
+}
+
 const programName = computed({
 	get: () => selectedProgram.value.name,
 	set: value => (selectedProgram.value.name = value)
@@ -21,38 +27,32 @@ const programName = computed({
 
 <template>
 	<Page row col>
-		<!-- <ion-toast
-			:isOpen="supabaseGetError"
-			message="Error getting data from database. Using default settings. Error: {{ supabaseGetError }}"
-			duration="2000"
-			position="middle"
-		/>
-		<ion-toast
-			:isOpen="supabaseGetError == GOOD"
-			message="Getting saved data from database"
-			duration="1000"
-			position="middle"
-		/> -->
-		<ion-loading :isOpen="!loaded" message="Loading..." />
+		<ion-loading :isOpen="!programsLoaded" message="Loading..." />
 
 		<!-- program selection -->
 		<h3>Select program:</h3>
 		<ion-button
 			v-for="program in programs"
-			@click="selectedProgram = program"
+			@click="onSelectProgram(program)"
 			>{{ program.name }}</ion-button
 		>
-		<ion-button @click="selectedProgram = DEFAULT_PROGRAM">+</ion-button>
+		<ion-button @click="onNewProgram()">+</ion-button>
 
 		<br />
 		<br />
 
-		<ion-item fill="outline">
-			<ion-label position="floating"> Program name </ion-label>
-			<ion-input v-model="programName" />
-		</ion-item>
+		<ion-input
+			label=" Program name "
+			labelPlacement="floating"
+			fill="outline"
+			v-model="programName"
+		/>
 		<br />
 
-		<ProgramTable v-if="loaded" :program="selectedProgram" :key="key" />
+		<ProgramTable
+			v-if="programsLoaded"
+			:program="selectedProgram"
+			:key="key"
+		/>
 	</Page>
 </template>
