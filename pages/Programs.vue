@@ -27,7 +27,7 @@ const programName = computed({
 
 <template>
 	<Page row col>
-		<ion-loading :isOpen="!programsLoaded" message="Loading..." />
+		<!-- <ion-loading :isOpen="!programsLoaded" message="Loading..." /> -->
 
 		<!-- program selection -->
 		<h3>Select program:</h3>
