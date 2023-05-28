@@ -11,6 +11,10 @@ const pages: Pages = [
 	{
 		name: 'Calendar Tool',
 		path: '/calendar'
+	},
+	{
+		name: 'Programs2',
+		path: '/programs2'
 	}
 ]
 const title = "Zach's Tools"

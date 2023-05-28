@@ -1,7 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
 	ssr: false,
-	modules: ['@nuxtjs/ionic', '@nuxtjs/supabase', '@vueuse/nuxt'],
+	modules: [
+		'@nuxtjs/ionic',
+		'@nuxtjs/supabase',
+		'@vueuse/nuxt',
+		'@nuxtjs/tailwindcss'
+	],
 	css: [
 		'@ionic/core/css/core.css',
 		'@ionic/core/css/normalize.css',

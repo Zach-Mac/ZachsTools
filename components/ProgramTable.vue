@@ -75,6 +75,7 @@ watch(musclesList, () => {
 	for (let i = 0; i < musclesList.value.length; i++) {
 		programData.value[musclesList.value[i]].index = i
 	}
+	console.log('musclesList.value', musclesList.value)
 })
 
 const musclesComputed = computed(() => {
