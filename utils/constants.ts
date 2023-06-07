@@ -1,4 +1,4 @@
-export const DAYS_OF_WEEK = [
+export const DAYS_OF_WEEK: Day[] = [
 	'Monday',
 	'Tuesday',
 	'Wednesday',
@@ -27,7 +27,7 @@ export const musclesListDefault = [
 export const EMPTY_PROGRAM: Program = {
 	name: 'New Empty Program',
 	data: {
-		'': {
+		Muscle: {
 			days: ['Monday', 'Thursday', 'Saturday'],
 			setsPerDay: '4',
 			index: 3

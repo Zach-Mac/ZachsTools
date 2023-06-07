@@ -6,7 +6,23 @@ const props = defineProps<{
 	program: Program
 }>()
 
-const programData = ref(props.program.data)
+const dragOptions = {
+	animation: 150,
+	group: 'description',
+	disabled: false,
+	ghostClass: 'ghost'
+}
+
+const {
+	programData,
+	onSave,
+	musclesList,
+	musclesComputed,
+	saveToast,
+	saveErrorToast,
+	deleteToast
+} = useProgramTable(props.program)
+
 const { history, undo, redo, canUndo, canRedo } = useRefHistory(programData, {
 	deep: true
 })
@@ -19,81 +35,7 @@ useEventListener(document, 'keydown', e => {
 	}
 })
 
-const saveToast = ref(false)
-const saveErrorToast = ref(null)
-const deleteToast = ref(false)
-function onSave() {
-	const newProgram = {
-		name: props.program.name,
-		data: programData.value
-	}
-	updateProgram(newProgram)
-		.then(() => {
-			saveToast.value = true
-			loadPrograms()
-		})
-		.catch(e => {
-			saveErrorToast.value = true
-			console.log('supabase post error', e)
-		})
-}
-
-async function onDelete() {
-	const alert = await alertController.create({
-		header: 'Are you absolutely sure?',
-		buttons: [
-			{
-				text: 'Cancel',
-				role: 'cancel',
-				handler: () => {}
-			},
-			{
-				text: 'OK',
-				role: 'confirm',
-				handler: () => {
-					deleteProgram(props.program.name).then(() => {
-						deleteToast.value = true
-						loadPrograms()
-					})
-				}
-			}
-		],
-		message:
-			'This will permanently delete the program and all data associated with it.'
-	})
-
-	await alert.present()
-}
-
-let mL = new Array(Object.keys(programData.value).length)
-for (let name of Object.keys(programData.value)) {
-	mL[programData.value[name].index] = name
-}
-
-const musclesList = ref(mL)
-watch(musclesList, () => {
-	for (let i = 0; i < musclesList.value.length; i++) {
-		programData.value[musclesList.value[i]].index = i
-	}
-	console.log('musclesList.value', musclesList.value)
-})
-
-const musclesComputed = computed(() => {
-	let obj = Object.fromEntries(
-		musclesList.value.map(m => [
-			m,
-			{
-				setsPerWeek: parseInt(programData.value[m].setsPerDay)
-					? parseInt(programData.value[m].setsPerDay) *
-					  programData.value[m].days.length
-					: 0
-			}
-		])
-	)
-	return obj
-})
-
-const totalSetsPerDay = day => {
+const totalSetsPerDay = (day: Day) => {
 	let total = 0
 	for (let m of Object.keys(programData.value)) {
 		if (programData.value[m].days.includes(day)) {
@@ -132,7 +74,7 @@ function deleteMuscle(m) {
 	musclesList.value = musclesList.value.filter(muscle => muscle !== m)
 }
 
-function toggleDay(m, day) {
+function toggleDay(m, day: Day) {
 	let index
 	if ((index = programData.value[m].days.indexOf(day)) >= 0) {
 		programData.value[m].days.splice(index, 1)
@@ -143,27 +85,18 @@ function toggleDay(m, day) {
 	}
 }
 
-function getDay(m, day) {
+function getDay(m, day: Day) {
 	if (programData.value[m].days.includes(day)) {
 		return m
 	}
 	return '-'
 }
 
-const mondayStyle = day =>
-	day == 'Monday' ? 'border-left: 1px solid black' : ''
-
 const table = ref(null)
 const { width: tableWidth, height: tableHeight } = useElementSize(table)
 const { width: winWidth, height: winHeight } = useWindowSize()
 // useLog('winwidth, tableWidth', winWidth, tableWidth)
 
-const { shrinkage, SHRINK, MAX_SHRINKAGE } = useShrinkage([
-	'DAY',
-	['SD', 'SW'],
-	'MUSCLE',
-	'G'
-])
 const { key, update } = useKey()
 
 const lastWinWidthTableChange = ref(0)
@@ -192,47 +125,29 @@ watchThrottled(
 	{ immediate: true, throttle: 100 }
 )
 
-const daysLabel = day =>
-	computed(() => (shrinkage.value >= SHRINK.DAY ? day[0] : day)).value
 const muscleLabel = m =>
 	computed(() =>
 		shrinkage.value >= SHRINK.MUSCLE
 			? m.split(' ').reduce((prev, curr) => prev + curr[0], '')
 			: m
 	).value
-const setsPerDayLabel = computed(() =>
-	shrinkage.value >= SHRINK.SD ? 'S/D' : 'Sets/Day'
-)
-const setsPerWeekLabel = computed(() =>
-	shrinkage.value >= SHRINK.SW ? 'S/W' : 'Sets/Week'
-)
-const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 </script>
 
 <template>
 	<div style="overflow-x: auto">
-		<ion-button @click="undo" :disabled="!canUndo">undo</ion-button>
-		<ion-button @click="redo" :disabled="!canRedo">redo</ion-button>
+		<ion-row>
+			<ion-button @click="undo" :disabled="!canUndo">undo</ion-button>
+			<ion-button @click="redo" :disabled="!canRedo">redo</ion-button>
+		</ion-row>
 		<table ref="table" :key="key">
-			<tr>
-				<th v-for="day in DAYS_OF_WEEK" :style="mondayStyle(day)">
-					{{ daysLabel(day) }}
-				</th>
-				<th class="spacer"></th>
-				<th>{{ 'Group' }}</th>
-				<th>{{ setsPerDayLabel }}</th>
-				<th>{{ setsPerWeekLabel }}</th>
-				<!-- <th>
-					<ion-button @click="drag = !drag">
-						<ion-icon :icon="ioniconsReorderFourOutline" />
-					</ion-button>
-				</th> -->
-			</tr>
+			<ProgramTableHeader :shrinkage="shrinkage" :SHRINK="SHRINK" />
+			<!-- <ProgramTableBody /> -->
 			<draggable
 				v-model="musclesList"
 				tag="tbody"
 				item-key="name"
 				handle=".handle"
+				v-bind="dragOptions"
 			>
 				<template #item="{ element }">
 					<tr>
@@ -293,7 +208,7 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 		</table>
 	</div>
 	<ion-button @click="onSave()"> Save </ion-button>
-	<ion-button @click="onDelete()" color="danger"> Delete </ion-button>
+	<DeleteButton :programName="program.name" />
 	<ion-toast
 		:isOpen="saveToast"
 		@didDismiss="() => (saveToast = false)"
@@ -317,7 +232,7 @@ const groupLabel = computed(() => (shrinkage.value >= SHRINK.G ? 'G' : 'Group'))
 	/>
 </template>
 
-<style scoped>
+<style>
 .cell-class {
 	border-color: black;
 	border-width: 0.01em;

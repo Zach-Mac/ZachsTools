@@ -2,19 +2,16 @@ import { Ref } from 'vue'
 
 import Ajv from 'ajv'
 
-const ajv = new Ajv() // options can be passed, e.g. {allErrors: true}
-
+const ajv = new Ajv()
 const validate = ajv.compile(muscleGroup)
 
 const supabaseGetError = ref(null)
 export const programsLoaded = ref(false)
 
 export const selectedProgram: Ref<Program> = ref({} as Program)
-export const programs: Ref<Program[]> = ref([])
+selectedProgram.value = DEFAULT_PROGRAM
 
-// refresh page if user is not logged in
-// TODO: need a guard for this
-// if (!user.value) window.location = window.location.origin
+export const programs: Ref<Program[]> = ref([])
 
 export async function loadPrograms() {
 	const supabase = useSupabaseClient()

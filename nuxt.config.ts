@@ -5,7 +5,8 @@ export default defineNuxtConfig({
 		'@nuxtjs/ionic',
 		'@nuxtjs/supabase',
 		'@vueuse/nuxt',
-		'@nuxtjs/tailwindcss'
+		'@nuxtjs/tailwindcss',
+		'@invictus.codes/nuxt-vuetify'
 	],
 	css: [
 		'@ionic/core/css/core.css',
