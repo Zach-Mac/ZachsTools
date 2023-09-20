@@ -31,6 +31,17 @@ const dragOptions = {
 const test = () => {
 	console.log('toRaw(items)', toRaw(items.value))
 }
+
+const p: Ref<Program> = ref({
+	name: 'asdf',
+	data: {
+		Chest: {
+			days: ['Monday', 'Thursday', 'Saturday'],
+			setsPerDay: '4',
+			index: 1
+		}
+	}
+})
 </script>
 
 <template>
@@ -64,5 +75,14 @@ const test = () => {
 		</draggable>
 
 		<ion-button @click="test()"></ion-button>
+
+		<br />
+		<br />
+		<br />
+
+		index: {{ p.data.Chest.index }}
+
+		<br />
+		<ion-button @click="p.data.Chest.index++">+</ion-button>
 	</Page>
 </template>

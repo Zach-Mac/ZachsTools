@@ -18,8 +18,8 @@ provide('pages', props.pages)
 
 useHead({
 	title: props.title,
-	viewport: 'width=device-width, initial-scale=0.5, maximum-scale=0.5',
-	charset: 'utf-8',
+	// viewport: 'width=device-width, initial-scale=0.5, maximum-scale=0.5',
+	// charset: 'utf-8',
 	meta: [{ name: 'description', content: 'My amazing site.' }]
 })
 </script>

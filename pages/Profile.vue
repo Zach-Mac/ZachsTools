@@ -10,6 +10,14 @@ const doUserLogout = () => {
 
 <template>
 	<Page row col>
-		<ion-button @click="doUserLogout"> Sign out </ion-button>
+		<ion-row class="ion-justify-content-center ion-padding ion-margin">
+			<ion-button
+				class="ion-padding ion-margin"
+				@click="doUserLogout"
+				color="danger"
+			>
+				Sign Out
+			</ion-button>
+		</ion-row>
 	</Page>
 </template>

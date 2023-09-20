@@ -10,6 +10,11 @@ export const programsLoaded = ref(false)
 
 export const selectedProgram: Ref<Program> = ref({} as Program)
 selectedProgram.value = DEFAULT_PROGRAM
+export const programData = ref(selectedProgram.value.data)
+
+watch(selectedProgram, () => {
+	programData.value = selectedProgram.value.data
+})
 
 export const programs: Ref<Program[]> = ref([])
 

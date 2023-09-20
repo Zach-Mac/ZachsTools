@@ -2,26 +2,12 @@
 import draggable from 'vuedraggable'
 import { toastController, alertController } from '@ionic/vue'
 
-const props = defineProps<{
-	program: Program
-}>()
-
 const dragOptions = {
 	animation: 150,
 	group: 'description',
 	disabled: false,
 	ghostClass: 'ghost'
 }
-
-const {
-	programData,
-	onSave,
-	musclesList,
-	musclesComputed,
-	saveToast,
-	saveErrorToast,
-	deleteToast
-} = useProgramTable(props.program)
 
 const { history, undo, redo, canUndo, canRedo } = useRefHistory(programData, {
 	deep: true
@@ -33,6 +19,34 @@ useEventListener(document, 'keydown', e => {
 	} else if (e.ctrlKey && e.key === 'y') {
 		redo()
 	}
+})
+
+let mL: string[] = new Array(Object.keys(programData.value).length)
+for (let name of Object.keys(programData.value)) {
+	mL[programData.value[name].index] = name
+}
+
+const musclesList = ref(mL)
+watch(musclesList, () => {
+	for (let i = 0; i < musclesList.value.length; i++) {
+		programData.value[musclesList.value[i]].index = i
+	}
+	console.log('musclesList.value', musclesList.value)
+})
+
+const musclesComputed = computed(() => {
+	let obj = Object.fromEntries(
+		musclesList.value.map(m => [
+			m,
+			{
+				setsPerWeek: parseInt(programData.value[m].setsPerDay)
+					? parseInt(programData.value[m].setsPerDay) *
+					  programData.value[m].days.length
+					: 0
+			}
+		])
+	)
+	return obj
 })
 
 const totalSetsPerDay = (day: Day) => {
@@ -69,12 +83,12 @@ async function addMuscle() {
 		}
 	}
 }
-function deleteMuscle(m) {
+function deleteMuscle(m: string) {
 	delete programData.value[m]
 	musclesList.value = musclesList.value.filter(muscle => muscle !== m)
 }
 
-function toggleDay(m, day: Day) {
+function toggleDay(m: string, day: Day) {
 	let index
 	if ((index = programData.value[m].days.indexOf(day)) >= 0) {
 		programData.value[m].days.splice(index, 1)
@@ -85,7 +99,7 @@ function toggleDay(m, day: Day) {
 	}
 }
 
-function getDay(m, day: Day) {
+function getDay(m: string, day: Day) {
 	if (programData.value[m].days.includes(day)) {
 		return m
 	}
@@ -125,7 +139,7 @@ watchThrottled(
 	{ immediate: true, throttle: 100 }
 )
 
-const muscleLabel = m =>
+const muscleLabel = (m: string) =>
 	computed(() =>
 		shrinkage.value >= SHRINK.MUSCLE
 			? m.split(' ').reduce((prev, curr) => prev + curr[0], '')
@@ -208,8 +222,8 @@ const muscleLabel = m =>
 		</table>
 	</div>
 	<ion-button @click="onSave()"> Save </ion-button>
-	<DeleteButton :programName="program.name" />
-	<ion-toast
+	<DeleteButton :programName="selectedProgram.name" />
+	<!-- <ion-toast
 		:isOpen="saveToast"
 		@didDismiss="() => (saveToast = false)"
 		message="Saved!"
@@ -229,7 +243,7 @@ const muscleLabel = m =>
 		message="Program deleted"
 		duration="1000"
 		position="middle"
-	/>
+	/> -->
 </template>
 
 <style>

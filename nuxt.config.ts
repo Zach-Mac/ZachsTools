@@ -29,5 +29,25 @@ export default defineNuxtConfig({
 			login: '/login',
 			callback: '/'
 		}
+	},
+	vuetify: {
+		vuetifyOptions: {
+			display: {
+				mobileBreakpoint: 'sm'
+			},
+			// blueprint: md3,
+			// theme: {
+			// 	defaultTheme: 'dark'
+			// },
+			defaults: {
+				VSelect: {
+					variant: 'outlined'
+				}
+			}
+		},
+		moduleOptions: {
+			treeshaking: true
+			// autoImport: false
+		}
 	}
 })

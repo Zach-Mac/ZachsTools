@@ -1,27 +1,21 @@
 <script setup lang="ts">
 import { personCircle } from 'ionicons/icons'
 
-const props = defineProps({
-	title: {
-		type: String,
-		required: true
-	},
-	pages: {
-		type: Array
-	},
-	titleStyle: {
-		type: String,
-		default: 'font-size: 1.5rem'
-	},
-	subtitleStyle: {
-		type: String,
-		default: 'font-size: 1rem'
-	},
-	buttonStyle: {
-		type: String,
-		default: ''
-	}
+interface Props {
+	title: string
+	pages?: Page[]
+	titleStyle?: string
+	subtitleStyle?: string
+	buttonStyle?: string
+}
+
+const props = withDefaults(defineProps<Props>(), {
+	pages: () => [],
+	titleStyle: 'font-size: 1.5rem',
+	subtitleStyle: 'font-size: 1rem',
+	buttonStyle: ''
 })
+
 const router = useIonRouter()
 </script>
 
